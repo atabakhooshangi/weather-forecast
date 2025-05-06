@@ -1,0 +1,48 @@
+Component Hierarchy
+=================
+
++------------------+
+|     App.vue      |
++------------------+
+         |
+         v
++------------------+
+|   HomeView.vue   |
++------------------+
+         |
+    +----+----+----+----+
+    |         |         |         |
+    v         v         v         v
++--------+ +--------+ +--------+ +--------+
+|Daily   | |Temp    | |Weather | |Station |
+|Forecast| |Graph   | |Display | |List    |
++--------+ +--------+ +--------+ +--------+
+
+Component Groups:
+----------------
+[Main Components]
+  ├── App.vue (Root component, layout & routing)
+  └── HomeView.vue (Main view, orchestrates weather display)
+
+[Weather Components]
+  ├── DailyForecast.vue (Daily weather forecasts)
+  ├── TemperatureGraph.vue (Temperature trends)
+  └── WeatherDisplay.vue (Current conditions)
+
+[Station Components]
+  └── StationList.vue (Station management & selection)
+
+Data Flow:
+----------
+App.vue
+  └── HomeView.vue
+       ├── DailyForecast.vue (receives forecasts data)
+       ├── TemperatureGraph.vue (receives temperature data)
+       ├── WeatherDisplay.vue (receives current weather)
+       └── StationList.vue (provides station selection)
+
+Legend:
+-------
+[Component] - Vue component
+    └──    - Parent-child relationship
+    ├──    - Sibling relationship 

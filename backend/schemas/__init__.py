@@ -1,0 +1,1 @@
+from .forecast import ForecastInputSchema,ForcastOutputBase,ForecastOutputSchema

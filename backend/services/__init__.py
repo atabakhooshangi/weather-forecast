@@ -1,0 +1,2 @@
+from .predict import AsyncWeatherPredictor as AsyncWeatherPredictorV1
+from .predict_v2 import AsyncWeatherPredictor as AsyncWeatherPredictorV2

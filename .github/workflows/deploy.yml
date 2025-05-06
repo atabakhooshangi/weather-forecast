@@ -1,0 +1,36 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Download build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: frontend-build
+        path: frontend/dist
+
+    - name: Deploy to server
+      run: |
+        echo "Deploying to ${{ github.event.inputs.environment }}"
+        # Add your deployment commands here
+        # For example:
+        # - rsync the build files to your server
+        # - restart the web server
+        # - clear cache 
