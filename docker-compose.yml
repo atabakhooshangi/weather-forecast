@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   frontend:
+    container_name: weather-frontend
     build:
       context: .
       dockerfile: frontend/Dockerfile
@@ -13,6 +14,7 @@ services:
       - backend
 
   backend:
+    container_name: weather-backend
     build:
       context: .
       dockerfile: backend/Dockerfile
@@ -26,12 +28,13 @@ services:
         condition: service_healthy
 
   redis:
+    container_name: weather-redis
     image: redis:7-alpine
     ports:
       - "6381:6381"
     command: redis-server --port 6381
     volumes:
-      - redis_data:/data
+      - ./redis_data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "-p", "6381", "ping"]
       interval: 10s
@@ -39,8 +42,9 @@ services:
       retries: 5
 
   cassandra:
+    container_name: weather-cassandra
     build:
-      context: ./etl/cassandra
+      context: db/cassandra
       dockerfile: Dockerfile
     ports:
       - "9042:9042"
@@ -53,13 +57,29 @@ services:
       - CASSANDRA_USERNAME=cassandra
       - CASSANDRA_PASSWORD=cassandra
     volumes:
-      - cassandra_data:/var/lib/cassandra
+      - ./cassandra_data:/var/lib/cassandra
     healthcheck:
       test: ["CMD", "cqlsh", "-u", "cassandra", "-p", "cassandra", "-e", "describe keyspaces"]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 40s
+
+  model:
+    container_name: weather-model
+    build:
+      context: .
+      dockerfile: model/Dockerfile
+    volumes:
+      - ./model:/app/model
+    environment:
+      - CASSANDRA_HOST=cassandra
+      - CASSANDRA_PORT=9042
+      - CASSANDRA_USERNAME=cassandra
+      - CASSANDRA_PASSWORD=cassandra
+    depends_on:
+      cassandra:
+        condition: service_healthy
 
 volumes:
   redis_data:

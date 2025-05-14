@@ -31,7 +31,8 @@ venv.bak/
 .coverage
 htmlcov/
 .pytest_cache/
-
+.github/
+.github
 # Node
 node_modules/
 npm-debug.log*
@@ -75,4 +76,11 @@ Thumbs.db
 .env.*
 !.env.example
 .cache/
-.temp/ 
+.temp/
+
+
+cassandra_data/
+./cassandra_data
+
+redis_data
+./redis_data

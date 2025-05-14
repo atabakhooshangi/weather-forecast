@@ -11,7 +11,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 
 # --- Load Dataset ---
-raw_df = pd.read_parquet('./station_datasets/full_concat_data_cleaned.parquet')
+raw_df = pd.read_parquet('etl/station_datasets/full_concat_data_cleaned.parquet')
 raw_df['timestamp'] = pd.to_datetime(raw_df['timestamp'])
 raw_df = raw_df.sort_values(['station_id', 'timestamp']).reset_index(drop=True)
 
@@ -97,7 +97,7 @@ time.sleep(10)
 
 
 # --- Load Dataset ---
-raw_df = pd.read_parquet('./station_datasets/full_concat_data_cleaned.parquet')
+raw_df = pd.read_parquet('etl/station_datasets/full_concat_data_cleaned.parquet')
 raw_df['timestamp'] = pd.to_datetime(raw_df['timestamp'])
 raw_df = raw_df.sort_values(['station_id', 'timestamp']).reset_index(drop=True)
 

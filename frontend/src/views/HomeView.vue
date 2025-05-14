@@ -46,7 +46,7 @@
                         {{ forecast.condition }}
                       </div>
                       <div class="px-2 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-medium inline-block">
-                        RH: {{ forecast.humidity }}%
+                        RH: {{ Number(forecast.humidity).toFixed(1) }}%
                       </div>
                     </div>
                   </div>
@@ -67,6 +67,7 @@
 
           <div class="lg:col-span-1">
             <WeatherGraphs v-if="weatherData && weatherData.length > 0" :forecasts="first12Hours" />
+            <HumidityGraph v-if="weatherData && weatherData.length > 0" :forecasts="first12Hours" class="mt-6" />
           </div>
         </div>
       </div>
@@ -81,6 +82,7 @@ import { getStations } from '../services/stationsService'
 import { format } from 'date-fns'
 import DailyForecast from '../components/DailyForecast.vue'
 import WeatherGraphs from '../components/TemperatureGraph.vue'
+import HumidityGraph from '../components/HumidityGraph.vue'
 
 const stations = ref(getStations())
 const selectedStation = ref('')

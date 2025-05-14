@@ -17,7 +17,7 @@ EPOCHS = 30
 BATCH_SIZE = 64
 
 # --- Load dataset ---
-raw_df = pd.read_parquet('./station_datasets/full_concat_data_cleaned.parquet')
+raw_df = pd.read_parquet('etl/station_datasets/full_concat_data_cleaned.parquet')
 raw_df['timestamp'] = pd.to_datetime(raw_df['timestamp'])
 raw_df = raw_df.sort_values(['station_id', 'timestamp']).reset_index(drop=True)
 

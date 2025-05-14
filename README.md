@@ -1,151 +1,150 @@
-# Weather Forecast Application
+# Weather Forecast System
 
-A full-stack weather forecasting application that provides detailed weather predictions for various stations. The application uses machine learning models to predict temperature, precipitation, humidity, and weather conditions.
+A comprehensive weather forecasting system that includes data collection, processing, model training, and a web interface.
 
-## Features
+## System Components
 
-- Real-time weather forecasts for multiple stations
-- 12-hour detailed forecast view
-- Daily forecast overview
-- Temperature, precipitation, and humidity predictions
-- Weather condition predictions
-- Caching with Redis for improved performance
+- **Frontend**: Vue.js web application
+- **Backend**: FastAPI service
+- **Database**: Cassandra for weather data storage
+- **Cache**: Redis for caching
+- **Model Service**: Python service for ETL and model operations
 
 ## Prerequisites
 
-- Docker and Docker Compose installed
-- At least 4GB of RAM (for ML model inference)
-- Python 3.11.9 (if running locally)
-- Node.js 20 (if running frontend locally)
+- Docker and Docker Compose
+- Git
 
-## Project Structure
-
-```
-weather-forecast/
-├── backend/              # FastAPI backend
-│   ├── api/             # API endpoints and dependencies
-│   ├── config/          # Configuration files
-│   ├── models/          # ML model files
-│   ├── schemas/         # Pydantic models
-│   └── services/        # Business logic
-├── frontend/            # Vue.js frontend
-│   ├── src/            # Source files
-│   ├── public/         # Static assets
-│   └── components/     # Vue components
-└── docker-compose.yml   # Docker configuration
-```
-
-## Running with Docker (Recommended)
+## Getting Started
 
 1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd weather-forecast
-   ```
+```bash
+git clone <repository-url>
+cd weather-forecast
+```
 
-2. Build and start the containers:
-   ```bash
-   docker-compose up --build
-   ```
+2. Start all services:
+```bash
+docker-compose up -d
+```
 
-3. Access the application:
-   - Frontend: http://localhost:5173
-   - Backend API: http://localhost:8000
-   - API Documentation: http://localhost:8000/api/docs
+This will start all services with the following container names:
+- Frontend: `weather-frontend`
+- Backend: `weather-backend`
+- Redis: `weather-redis`
+- Cassandra: `weather-cassandra`
+- Model Service: `weather-model`
 
-## Running Locally
-
-### Backend Setup
-
-1. Create and activate a virtual environment:
-   ```bash
-   python -m venv .venv
-   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-   ```
-
-2. Install dependencies:
-   ```bash
-   pip install poetry
-   poetry install
-   ```
-
-3. Start Redis:
-   ```bash
-   docker run -d -p 6381:6381 redis:7-alpine redis-server --port 6381
-   ```
-
-4. Run the backend:
-   ```bash
-   cd backend
-   poetry run uvicorn main:app --host 0.0.0.0 --port 8000
-   ```
-
-### Frontend Setup
-
-1. Install dependencies:
-   ```bash
-   cd frontend
-   npm install
-   ```
-
-2. Start the development server:
-   ```bash
-   npm run dev
-   ```
-
-## Environment Variables
-
-### Backend
-- `REDIS_HOST`: Redis host (default: redis)
-- `REDIS_PORT`: Redis port (default: 6381)
-- `REDIS_DB`: Redis database number (default: 0)
-- `REDIS_USERNAME`: Redis username (optional)
-- `REDIS_PASSWORD`: Redis password (optional)
+## Accessing Services
 
 ### Frontend
-- `VITE_API_URL`: Backend API URL (default: http://localhost:8000)
+- URL: http://localhost:5173
+- Container: `weather-frontend`
+- Access logs: `docker logs weather-frontend`
 
-## API Endpoints
+### Backend API
+- URL: http://localhost:8000
+- API Documentation: http://localhost:8000/docs
+- Container: `weather-backend`
+- Access logs: `docker logs weather-backend`
 
-- `GET /forecast/?station_id={id}`: Get weather forecast for a specific station
-  - Parameters:
-    - `station_id`: Station identifier (required)
+### Redis
+- Port: 6381
+- Container: `weather-redis`
+- Access CLI: `docker exec -it weather-redis redis-cli -p 6381`
 
-## Available Stations
+### Cassandra
+- Port: 9042
+- Container: `weather-cassandra`
+- Access CQL Shell: `docker exec -it weather-cassandra cqlsh -u cassandra -p cassandra`
 
-The application supports the following weather stations:
+## Running ETL Pipeline
 
-| Station ID | Station Name | Latitude | Longitude |
-|------------|--------------|----------|-----------|
-| 12756      | Szecseny     | 48.1167  | 19.5167   |
-| 12840      | Budapest Met Center | 47.5167 | 19.0333 |
-| 12882      | Debrecen     | 47.4833  | 21.6      |
-| ...        | ...          | ...      | ...       |
+The ETL pipeline can be run manually through the model service container:
 
-(Full list available in the application)
+1. Access the model container:
+```bash
+docker exec -it weather-model bash
+```
+
+2. Run the ETL pipeline:
+```bash
+# Run without loading to Cassandra
+poetry run python model/etl/etl.py
+
+# Run with loading to Cassandra
+poetry run python model/etl/etl.py --cassandra
+```
+
+## Checking Cassandra Data
+
+To check the data loaded into Cassandra:
+
+1. Access Cassandra CQL shell:
+```bash
+docker exec -it weather-cassandra cqlsh -u cassandra -p cassandra
+```
+
+2. Check the data:
+```bash
+ cqlsh -e "SELECT count(*) FROM weather_forecast.weather_data;"
+```
+
+
+
+## Running Model Training
+
+To run model training scripts:
+
+1. Access the model container:
+```bash
+docker exec -it weather-model bash
+```
+
+2. Run the desired model script:
+```bash
+# For temperature model
+poetry run python model/temperature_model.py
+
+# For weather condition model
+poetry run python model/weather_condition_model.py
+
+# For precipitation model
+poetry run python model/precipation.py
+```
+
+## Stopping Services
+
+To stop all services:
+```bash
+docker-compose down
+```
+
+To stop and remove all data volumes:
+```bash
+docker-compose down -v
+```
 
 ## Troubleshooting
 
-1. If you encounter port conflicts:
-   - Check if port 8000 (backend) or 5173 (frontend) is already in use
-   - Modify the ports in docker-compose.yml if needed
+1. If services fail to start, check logs:
+```bash
+docker-compose logs
+```
 
-2. If Redis connection fails:
-   - Ensure Redis is running on port 6381
-   - Check if the Redis container is healthy
+2. To restart a specific service:
+```bash
+docker-compose restart <service-name>
+```
 
-3. If model loading fails:
-   - Verify that all model files are present in the correct directories
-   - Check file permissions
+3. To rebuild a specific service:
+```bash
+docker-compose up -d --build <service-name>
+```
 
-## Contributing
+## Development
 
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
-
-## License
-
-[Add your license information here]
+- Frontend code is in the `frontend/` directory
+- Backend code is in the `backend/` directory
+- Model and ETL code is in the `model/` directory
+- Database initialization scripts are in the `db/` directory
